@@ -40,6 +40,8 @@ def get_section_header(p):
             if(re.match(regex, rtext, re.I)):
                 return sectionRegexes[regex]
 
+    return None
+
 
 def main():
     doc = docx.Document('./guidelines.docx')

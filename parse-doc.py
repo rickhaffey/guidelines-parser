@@ -1,59 +1,41 @@
 import docx
 import parse_sections
+import json
 
-def format_title(text, i, includeLine = False):
-    return format_internal(text, 1, i, includeLine)
+def build_category(text):
+    return ("category", text.strip())
 
-def format_header(text, i, includeLine = False):
-    return format_internal(text, 2, i, includeLine)
+def build_guideline(text, category):
+    return ("guideline", {
+        "title": text.strip(),
+        "category": category,
+        "sections": []
+    })
 
-def format_subheader(text, i, includeLine = False):
-    return format_internal(text, 3, i, includeLine)
+# def format_header(text, i, includeLine = False):
+#     return format_internal(text, 1, i, includeLine)
 
-def format_internal(text, level, i, includeLine):
-    text = text.strip()
-    if(text):
-        prefix = "#" * level
-        if(includeLine):
-            return "%s (%d) %s" % (prefix, i, text)
-        else:
-            return "%s %s" % (prefix, text)
-    else:
-        return ""
+# def format_subheader(text, i, includeLine = False):
+#     return format_internal(text, 2, i, includeLine)
 
-    
-path = "/Users/rhaffey/Dropbox/Projects/EMS/pdf-work/guidelines.docx"
+# def format_internal(text, level, i, includeLine):
+#     text = text.strip()
+#     if(text):
+#         prefix = "#" * level
+#         if(includeLine):
+#             return "%s (%d) %s" % (prefix, i, text)
+#         else:
+#             return "%s %s" % (prefix, text)
+#     else:
+#         return ""
 
-doc = docx.Document(path)
-
-start = 0
-p_count = len(doc.paragraphs) #100
-h_log = open('headings_X.txt', 'w')
-
-def log(text):
-    global h_log
-    h_log.write(text)
-    h_log.write("\n")
-
-h = set()
-h2 = set()
-
-for i in range(start, start + p_count):
-    p = doc.paragraphs[i]
+def parse_paragraph(p, category = None):
     style = p.style.name
-    h.add(style)
 
-    s = ""
-    if("Title" in style):
-        s = format_title(p.text, i)
-    elif("Heading1" in style or "Heading 1" in style):
-        s = format_header(p.text, i)
+    if("Heading1" in style or "Heading 1" in style):
+        return build_category(p.text)
     elif("Heading2" in style or "Heading 2" in style):
-        s = format_subheader(p.text, i)
-
-    if(s):
-        print(s)
-        log(s)
+        return build_guideline(p.text, category)
 
     runheading = ""
     for r in p.runs:
@@ -62,15 +44,49 @@ for i in range(start, start + p_count):
             runheading = runheading + r.text
 
     if(runheading.strip()):
-        s = format_subheader(runheading, i)
-        print(s)
-        log(s)
+        return build_guideline(runheading, category)
 
-    section = parse_sections.get_section_header(p)
-    if(section):
-        print("  * " + section)
-
-h_log.close()        
+    return None
 
 
+def main():
+    path = "/Users/rhaffey/Dropbox/Projects/EMS/pdf-work/guidelines.docx"
+    source_doc = docx.Document(path)
     
+    start = 0
+    p_count = len(source_doc.paragraphs)
+
+    out_doc = {
+        "guidelines": []
+    }
+
+    category = None
+    guideline = None
+    running_section = None
+    for i in range(start, start + p_count):
+        p = source_doc.paragraphs[i]
+    
+        parsed = parse_paragraph(p, category)
+        if(parsed):
+            if(parsed[0] == "category"):
+                category = parsed[1]
+            elif(parsed[0] == "guideline"):
+                guideline = parsed[1]
+                out_doc["guidelines"].append(guideline)
+
+            print('.', end='', flush=True)
+    
+        section = parse_sections.get_section_header(p)
+        if(section):
+            running_section = { "heading": section, "text": [] }
+            guideline["sections"].append(running_section)
+        elif(parsed == None and running_section != None):
+            print("+", end="", flush=True)
+            running_section["text"].append(p.text)
+
+    with open('output/out.json', 'w') as outfile:
+        outfile.write(json.dumps(out_doc))
+    
+
+if __name__ == '__main__':
+    main()
