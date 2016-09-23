@@ -1,0 +1,136 @@
+/*
+* Definitions
+
+* Patient Care Goals
+
+* Patient Presentation
+	* Inclusion / Exclusion Criteria
+	* Exclusion Criteria
+	* Inclusion Criteria
+
+* Special Transport Considerations
+
+* Scene Management
+
+* Patient Management
+	* Assessment
+	* Treatment and Interventions
+	* Patient Safety Considerations
+  * Secondary Assessment, Treatment, and Interventions
+  * Assessment, Treatment, and Interventions
+
+* Notes / Educational Pearls
+	* Key Considerations
+	* Pertinent Assessment Findings
+
+* Quality Improvement
+	* Key Documentation Elements
+	* Performance Measures
+
+* References
+*/
+{
+  "guidelines": [
+    {
+      "defintions": {
+        "p_index": 1,
+        "items": [
+          ...
+        ]
+      },
+      "patientCareGoals": {
+        "p_index": 2,
+        "items": [
+          ...
+        ]
+      },
+      "patientPresentation": {
+        // leaving out p_index, but it will be present on _all_ entries
+        "inclusionCriteria": {
+          "items": []
+        },
+        "exclusionCriteria": {
+        },
+        "inclusionExclusionCriteria": {
+        }
+      },
+      "specialTransporConsiderations": {},
+      "sceneManagement": {},
+      "patientManagement": {
+        "assessment": {},
+        "treatmentAndInterventions": {},
+        "patientSafetyConsiderations": {},
+        "secondaryAssesmentTreatmentAndInterventions": {},
+        "assessmentTreatmentAndInterventions": {}
+      },
+      "notesAndEducationalPearls": {
+        "keyConsiderations": {},
+        "pertinentAssessmentFindings": {}
+      },
+      "qualityImprovement": {
+        "keyDocumentationElements": {},
+        "performanceMeasures": {}
+      },
+      "references": {}
+    },
+    ...
+  ]
+}
+
+
+// example:
+  "notesAndEducationalPearls": {
+    "p_index": 1440,
+    "items": [
+      {
+        "text": "\tA formula for calculating a 0.5 gm/kg dose of IV dextrose is:",
+        "indent": 0,
+        "p_index": 1441
+      },
+      {
+        "text": "\t\t[50] / [____ % concentration of glucose] = ____ ml/kg",
+        "indent": 0,
+        "p_index": 1442
+      },
+      {
+        "text": "\t\tFor example:",
+        "indent": 0,
+        "p_index": 1444
+      }
+    ],
+    "keyConsiderations": {
+      "p_index": 1449,
+      "items": [
+         {
+           "text": "Consider contribution of oral diabetic medications to hypoglycemia",
+           "indent": 1,
+           "p_index": 1450
+         },
+         {
+           "text": "If possible, have family/patient turn off insulin pumps",
+           "indent": 1,
+           "p_index": 1451
+         },
+         {
+           "text": "Consider potential for intentional overdose of hypoglycemic agents",
+           "indent": 1,
+           "p_index": 1452
+         }
+      ]
+    },
+    "pertinentAssessmentFindings": {
+      "p_index": 1454,
+      "items": [
+         {
+           "text": "Concomitant trauma",
+           "indent": 1,
+           "p_index": 1455
+         },
+         {
+           "text": "Diaphoresis or hypothermia may be associated with hypoglycemia",
+           "indent": 1,
+           "p_index": 1456
+         }
+      ]
+    }
+  }
