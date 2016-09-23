@@ -16,6 +16,8 @@ json_text = "text"
 json_items = "items"
 json_indent = "indent"
 json_nemsis = "nemsis_ref"
+json_nemsis_id = "id"
+json_nemsis_text = "text"
 
 # json section names
 json_s_defintions = "defintions"
@@ -39,6 +41,7 @@ json_s_qualityImprovement = "qualityImprovement"
 json_s_keyDocumentationElements = "keyDocumentationElements"
 json_s_performanceMeasures = "performanceMeasures"
 json_s_references = "references"
+json_s_revisionDate = "revisionDate"
 
 
 sectionRegexes = {
@@ -62,7 +65,8 @@ sectionRegexes = {
   r"""quality.*improvement""": [json_s_qualityImprovement],
   r"""references""": [json_s_references],
   r"""special.*transport.*considerations""": [json_s_specialTransporConsiderations],
-  r"""scene.*management""": [json_s_sceneManagement]
+  r"""scene.*management""": [json_s_sceneManagement],
+  r"""revision.*date""": [json_s_revisionDate]
 }
 
 
@@ -80,8 +84,20 @@ def build_guideline(text, i, category):
     })
 
 def build_nemsis_ref(text, i):
+    # parse out the parts we care about
+    # todo - we're using the regex 2x (in the is_nemsis method and here) - find a clean way to do this once?
+    regex = r"""^\((\d+)\W*(.*)\)"""
+    match = re.match(regex, text, re.I)
+
+    n_id = None
+    n_text = text
+    if(len(match.groups()) >= 2):
+        n_id = int(match.groups()[0])
+        n_text = match.groups()[1]
+
     return (json_nemsis, {
-        json_text: text,
+        json_nemsis_id: n_id,
+        json_nemsis_text: n_text,
         json_p_index: i
     })
 
@@ -171,20 +187,26 @@ def show_progress(marker):
     print(marker, end='', flush=True)
 
 
+abridged = False
+
 def get_infile_path():
     if(len(sys.argv) >= 2):
         return sys.argv[1]
     else:
-        return default_root + "/guidelines.docx"
-        #return default_root + "/guidelines.partial.docx"
+        if(abridged):
+            return default_root + "/guidelines.partial.docx"
+        else:
+            return default_root + "/guidelines.docx"
 
 
 def get_outfile_path():
     if(len(sys.argv) >= 3):
         return sys.argv[2]
     else:
-        return default_root + "/output/out.json"
-        #return default_root + "/output/out.partial.json"
+        if(abridged):
+            return default_root + "/output/out.partial.json"
+        else:
+            return default_root + "/output/out.json"
 
 
 def main():
