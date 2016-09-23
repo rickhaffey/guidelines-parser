@@ -14,6 +14,7 @@ json_p_index = "p_index"
 json_heading = "heading"
 json_text = "text"
 json_indent = "indent"
+json_nemsis = "nemsis_ref"
 
 sectionRegexes = {
   r"""secondary.*assessment.*treatment.*interventions""": "Secondary Assessment, Treatment, and Interventions",
@@ -48,6 +49,13 @@ def build_guideline(text, i, category):
         json_title: text.strip(),
         json_category: category,
         json_sections: [],
+        json_nemsis: None,
+        json_p_index: i
+    })
+
+def build_nemsis_ref(text, i):
+    return (json_nemsis, {
+        json_text: text,
         json_p_index: i
     })
 
@@ -68,13 +76,28 @@ def build_section_text(text, i, indent):
     }
 
 
+def is_heading1(style):
+    return ("Heading1" in style or "Heading 1" in style)
+
+
+def is_heading2(style):
+    return ("Heading2" in style or "Heading 2" in style)
+
+
+def is_nemsis_ref(text):
+    regex = r"""^\(\d+"""
+    return re.match(regex, text, re.I)
+
+
 def parse_paragraph(p, i, category = None):
     style = p.style.name
 
-    if("Heading1" in style or "Heading 1" in style):
+    if(is_heading1(style)):
         return build_category(p.text)
-    elif("Heading2" in style or "Heading 2" in style):
+    elif(is_heading2(style)):
         return build_guideline(p.text, i, category)
+    elif(is_nemsis_ref(p.text)):
+        return build_nemsis_ref(p.text, i)
 
     runheading = ""
     for r in p.runs:
@@ -135,7 +158,8 @@ def get_outfile_path():
     if(len(sys.argv) >= 3):
         return sys.argv[2]
     else:
-        return default_root + "/output/out.json"
+        #return default_root + "/output/out.json"
+        return default_root + "/output/out.partial.json"
 
     
 def main():
@@ -159,16 +183,22 @@ def main():
     for i in range(start, end):
         p = source_doc.paragraphs[i]
 
+        # debugging
+        # print("%d: %s" % (i, p.text))
+
         # first, handle new category and guideline paragraphs
         parsed = parse_paragraph(p, i, running_category)
         if(parsed):
-            if(parsed[0] == "category"):
+            if(parsed[0] == json_category):
                 running_category = parsed[1]
                 show_progress("#")
-            elif(parsed[0] == "guideline"):
+            elif(parsed[0] == json_guideline):
                 running_guideline = parsed[1]
                 out_doc[json_guidelines].append(running_guideline)
                 show_progress("+")
+            elif(parsed[0] == json_nemsis):
+                running_guideline[json_nemsis] = parsed[1]
+                show_progress("n")
 
         # next, parse out any section details (headers, and section text)
         section = parse_section_header(p)
@@ -179,7 +209,7 @@ def main():
             outText = p.text.strip()
             if(outText != ""):
                 section_text = build_section_text(p.text, i, get_ilvl(p))
-                running_section["text"].append(section_text)
+                running_section[json_text].append(section_text)
                 show_progress(".")
             else:
                 show_progress("x")
