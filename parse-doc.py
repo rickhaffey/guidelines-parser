@@ -265,7 +265,7 @@ def main():
             outText = p.text.strip()
             if(outText != ""):
                 lvl = get_ilvl(p)
-                section_text = build_section_text(p.text, i)
+                section_text = build_section_text(outText, i)
                 item_parents[lvl] = section_text
                 item_parent = item_parents.get(lvl - 1)
                 if(item_parent == None):
