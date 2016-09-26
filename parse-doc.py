@@ -109,10 +109,9 @@ def build_section(i):
     }
 
 
-def build_section_text(text, i, indent):
+def build_section_text(text, i):
     return {
         json_text: text,
-        json_indent: indent,
         json_p_index: i
     }
 
@@ -261,11 +260,20 @@ def main():
                 parent = element
 
             running_section = element
+            item_parents = {}
         elif(parsed == None and running_section != None):
             outText = p.text.strip()
             if(outText != ""):
-                section_text = build_section_text(p.text, i, get_ilvl(p))
-                running_section[json_items].append(section_text)
+                lvl = get_ilvl(p)
+                section_text = build_section_text(p.text, i)
+                item_parents[lvl] = section_text
+                item_parent = item_parents.get(lvl - 1)
+                if(item_parent == None):
+                    running_section[json_items].append(section_text)
+                else:
+                    if(item_parent.get(json_items) == None):
+                        item_parent[json_items] = []
+                    item_parent[json_items].append(section_text)
                 show_progress(".")
             else:
                 show_progress("x")
