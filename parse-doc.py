@@ -15,7 +15,7 @@ json_heading = "heading"
 json_text = "text"
 json_items = "items"
 json_indent = "indent"
-json_nemsis = "nemsis_ref"
+json_nemsis = "nemsis_refs"
 json_nemsis_id = "id"
 json_nemsis_text = "text"
 
@@ -86,20 +86,28 @@ def build_guideline(text, i, category):
 def build_nemsis_ref(text, i):
     # parse out the parts we care about
     # todo - we're using the regex 2x (in the is_nemsis method and here) - find a clean way to do this once?
-    regex = r"""^\((\d+)\W*(.*)\)"""
+    # note - restrict to cases with 3 or more digits following leading paren.
+    regex = r"""^\((\d{3,}\W*.*)\)"""
     match = re.match(regex, text, re.I)
 
-    n_id = None
-    n_text = text
-    if(len(match.groups()) >= 2):
-        n_id = int(match.groups()[0])
-        n_text = match.groups()[1]
+    if(match != None and len(match.groups()) >= 1):
+        # have a match; split on ';', then parse ID and value for each
+        results = []
+        reftext = match.groups()[0]
+        refs = [r.split('–') for r in reftext.split(';')]
 
-    return (json_nemsis, {
-        json_nemsis_id: n_id,
-        json_nemsis_text: n_text,
-        json_p_index: i
-    })
+        for ref in refs:
+            refid = int(ref[0].strip())
+            reftext = ref[1].strip()
+            results.append({
+                json_nemsis_id: refid,
+                json_nemsis_text: reftext,
+                json_p_index: i
+                })
+
+        return (json_nemsis, results)
+    else:
+        return (json_nemsis, None)
 
 
 def build_section(i):
@@ -186,7 +194,7 @@ def show_progress(marker):
     print(marker, end='', flush=True)
 
 
-abridged = True
+abridged = False
 
 def get_infile_path():
     if(len(sys.argv) >= 2):
