@@ -3,7 +3,7 @@ import json
 import re
 import sys
 
-default_root = "/Users/rhaffey/Dropbox/Projects/EMS/pdf-work"
+default_root = "/Users/rhaffey/Dropbox/Projects/EMS/EBG"
 
 json_category = "category"
 json_guidelines = "guidelines"
@@ -44,30 +44,30 @@ json_s_references = "references"
 json_s_revisionDate = "revisionDate"
 
 
-sectionRegexes = {
-  r"""secondary.*assessment.*treatment.*interventions""": [json_s_patientManagement, json_s_secondaryAssesmentTreatmentAndInterventions],
-  r"""assessment.*treatment.*interventions""": [json_s_patientManagement, json_s_assessmentTreatmentAndInterventions],
-  r"""treatment.*interventions""": [json_s_patientManagement, json_s_treatmentAndInterventions],
-  r"""assessment""": [json_s_patientManagement, json_s_assessment],
-  r"""definitions""": [json_s_defintions],
-  r"""inclusion.*exclusion.*criteria""": [json_s_patientPresentation, json_s_inclusionExclusionCriteria],
-  r"""exclusion.*criteria""": [json_s_patientPresentation, json_s_exclusionCriteria],
-  r"""inclusion.*criteria""": [json_s_patientPresentation, json_s_inclusionCriteria],
-  r"""key.*considerations""": [json_s_notesAndEducationalPearls, json_s_keyConsiderations],
-  r"""key.*documentation.*elements""": [json_s_qualityImprovement, json_s_keyDocumentationElements],
-  r"""notes.*educational.*pearls""": [json_s_notesAndEducationalPearls],
-  r"""patient.*care.*goals""": [json_s_patientCareGoals],
-  r"""patient.*management""": [json_s_patientManagement],
-  r"""patient.*presentation""": [json_s_patientPresentation],
-  r"""patient.*safety.*considerations""": [json_s_patientManagement, json_s_patientSafetyConsiderations],
-  r"""performance.*measures""": [json_s_qualityImprovement, json_s_performanceMeasures],
-  r"""pertinent.*assessment.*findings""": [json_s_notesAndEducationalPearls, json_s_pertinentAssessmentFindings],
-  r"""quality.*improvement""": [json_s_qualityImprovement],
-  r"""references""": [json_s_references],
-  r"""special.*transport.*considerations""": [json_s_specialTransporConsiderations],
-  r"""scene.*management""": [json_s_sceneManagement],
-  r"""revision.*date""": [json_s_revisionDate]
-}
+sectionRegexes = [
+  (r"""secondary.*assessment.*treatment.*interventions""", [json_s_patientManagement, json_s_secondaryAssesmentTreatmentAndInterventions]),
+  (r"""assessment.*treatment.*interventions""", [json_s_patientManagement, json_s_assessmentTreatmentAndInterventions]),
+  (r"""treatment.*interventions""", [json_s_patientManagement, json_s_treatmentAndInterventions]),
+  (r"""assessment""", [json_s_patientManagement, json_s_assessment]),
+  (r"""definitions""", [json_s_defintions]),
+  (r"""inclusion.*exclusion.*criteria""", [json_s_patientPresentation, json_s_inclusionExclusionCriteria]),
+  (r"""exclusion.*criteria""", [json_s_patientPresentation, json_s_exclusionCriteria]),
+  (r"""inclusion.*criteria""", [json_s_patientPresentation, json_s_inclusionCriteria]),
+  (r"""key.*considerations""", [json_s_notesAndEducationalPearls, json_s_keyConsiderations]),
+  (r"""key.*documentation.*elements""", [json_s_qualityImprovement, json_s_keyDocumentationElements]),
+  (r"""notes.*educational.*pearls""", [json_s_notesAndEducationalPearls]),
+  (r"""patient.*care.*goals""", [json_s_patientCareGoals]),
+  (r"""patient.*management""", [json_s_patientManagement]),
+  (r"""patient.*presentation""", [json_s_patientPresentation]),
+  (r"""patient.*safety.*considerations""", [json_s_patientManagement, json_s_patientSafetyConsiderations]),
+  (r"""performance.*measures""", [json_s_qualityImprovement, json_s_performanceMeasures]),
+  (r"""pertinent.*assessment.*findings""", [json_s_notesAndEducationalPearls, json_s_pertinentAssessmentFindings]),
+  (r"""quality.*improvement""", [json_s_qualityImprovement]),
+  (r"""references""", [json_s_references]),
+  (r"""special.*transport.*considerations""", [json_s_specialTransporConsiderations]),
+  (r"""scene.*management""", [json_s_sceneManagement]),
+  (r"""revision.*date""", [json_s_revisionDate])
+]
 
 
 def build_category(text):
@@ -161,9 +161,9 @@ def parse_section_header(p):
 
     if(isSection):
         # check to see whether it matches one of our regexes
-        for regex in sectionRegexes.keys():
+        for (regex, hierarchy) in sectionRegexes:
             if(re.match(regex, rtext, re.I)):
-                return sectionRegexes[regex]
+                return hierarchy
 
     return None
 
@@ -186,7 +186,7 @@ def show_progress(marker):
     print(marker, end='', flush=True)
 
 
-abridged = False
+abridged = True
 
 def get_infile_path():
     if(len(sys.argv) >= 2):
