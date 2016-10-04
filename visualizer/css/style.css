@@ -1,0 +1,75 @@
+body {
+    padding-top: 50px;
+}
+
+section .container {
+    width: 70%;
+}
+
+ol li {
+    list-style-type: decimal;
+}
+
+ol ol li {
+    list-style-type: lower-alpha;
+}
+
+ol ol ol li {
+    list-style-type: lower-roman;
+}
+
+h1 {
+    font-family: Charter, serif;
+    color: #428bca;
+    font-size: 18px;
+}
+
+h2 {
+    margin-bottom: 0;
+}
+
+h3 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+h2, h3 {
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+h3 {
+    margin-left: 2rem;
+}
+
+span.p , p.p1{
+    margin-left: 25px;
+}
+
+span.p2, p.p2 {
+    margin-left: 55px;
+}
+
+table {
+    width: 80%;
+    margin-left: 55px;
+    margin-bottom: 4rem;
+
+
+}
+
+td, th {
+    border: 1px solid black;
+    padding-left: 1em;
+    padding-bottom: 1em;
+}
+
+tr.highlight {
+    background-color: #BDB;
+}
+
+th {
+    font-family: Charter, serif;
+    font-weight: bold;
+}
