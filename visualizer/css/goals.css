@@ -1,0 +1,21 @@
+body {
+    padding-top: 50px;
+}
+
+section .container {
+    width: 70%;
+}
+
+
+.panel-body.detail ul {
+    padding-left: 0;
+    list-style: none;
+}
+
+#definitionDetail, #goalsDetail {
+
+}
+
+#presentationDetail .label {
+    margin-right: 1rem;
+}

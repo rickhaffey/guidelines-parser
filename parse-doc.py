@@ -201,9 +201,9 @@ def get_infile_path():
         return sys.argv[1]
     else:
         if(abridged):
-            return default_root + "/guidelines.partial.docx"
+            return default_root + "/input-docs/guidelines.partial.tbl-img.docx"
         else:
-            return default_root + "/guidelines.docx"
+            return default_root + "/input-docs/guidelines.docx"
 
 
 def get_outfile_path():
@@ -211,7 +211,7 @@ def get_outfile_path():
         return sys.argv[2]
     else:
         if(abridged):
-            return default_root + "/output/out.partial.json"
+            return default_root + "/output/out.partial.tbl-img.json"
         else:
             return default_root + "/output/out.json"
 
